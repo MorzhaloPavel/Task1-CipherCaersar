@@ -24,20 +24,23 @@ program.parse(process.argv)
 
 const { action, shift, output, input } = program.opts();
 
-if (action !== 'decode' && action !== 'encode') {
-  process.stderr.write(
-    'Введите правильный "action"!'
-  );
-  process.exit(1)
+if (action !== "decode" && action !== "encode") {
+  process.stderr.write('Введите правильный "action", "action" принемает значение "encode" / "decode"');
+  process.exit(1);
+}
+if (input !== "input.txt" && typeof input !== "undefined") {
+  process.stderr.write('Вы ввели неправильное название фаила ввода. Укажие "input.txt"');
+  process.exit(1);
+}
+if (output !== "output.txt" && typeof output !== "undefined") {
+  process.stderr.write('Вы ввели неправильное название фаила вывода. Укажие "output.txt"');
+  process.exit(1);
 }
 
 if (isNaN(+shift)) {
-  process.stderr.write(
-    'Введите число!'
-  );
-  process.exit(1)
+  process.stderr.write("Введите число!");
+  process.exit(1);
 }
-
 const readStream = input
   ? fs.createReadStream('input.txt')
   : process.stdin;
@@ -46,16 +49,17 @@ const readStream = input
   ? fs.createWriteStream('output.txt', { flags: 'a' })
   : process.stdout;
 
-  const S = action === 'encode' ? +shift : -shift;
+  const shiftAction = action === "encode" ? Math.floor(+shift) : Math.floor(-shift);
   const transform = new Transform({
-  
-    transform(chunk, encoding, callback){
-      this.push(cipherCaesar(chunk.toString(), S));
-      callback()
-  }
-  })
+    transform(chunk, encoding, callback) {
+      this.push(cipherCaesar(chunk.toString(), shiftAction));
+      callback();
+    },
+  });
 
-  pipeline(readStream, transform, writeStream, err => { 
-    if (err) {console.log('Error pipeline')}
-    console.log('Pipeline succeeded.');
+  pipeline(readStream, transform, writeStream, (err) => {
+    if (err) {
+      console.log("Error pipeline");
+    }
+    console.log("Pipeline succeeded.");
   });
