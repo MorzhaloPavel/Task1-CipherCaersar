@@ -31,13 +31,12 @@ if (action !== 'decode' && action !== 'encode') {
   process.exit(1)
 }
 
-// вернутся доделать проверку на число
-
-// if (typeof +shift !== 'number') {
-//   process.stderr.write(
-//     'Введите число!'
-//   );
-// }
+if (isNaN(+shift)) {
+  process.stderr.write(
+    'Введите число!'
+  );
+  process.exit(1)
+}
 
 const readStream = input
   ? fs.createReadStream('input.txt')
